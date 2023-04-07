@@ -1,15 +1,11 @@
-import sys
-sys.path.append("..")
-
 from datetime import timedelta
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app import models
+from app.models import get_db
+from app.models.users import User
 from app.schemas.users import CreateUserSchema, UserSchema
 from app.services.users import (
     authenticate_user,
@@ -28,22 +24,22 @@ users_route = APIRouter(
 
 
 @users_route.get("", status_code=status.HTTP_200_OK)
-async def get_users(db: Session=Depends(models.get_db)):
-    return db.query(models.User).all()
+async def get_users(db: Session=Depends(get_db)):
+    return db.query(User).all()
 
 
 @users_route.post("", status_code=status.HTTP_201_CREATED)
-async def add_user(user_data: CreateUserSchema, db: Session=Depends(models.get_db)):
+async def add_user(user_data: CreateUserSchema, db: Session=Depends(get_db)):
     user_data_ = user_data.dict()
     password = user_data_.pop("password")
-    user = models.User(**user_data_, password_hash=get_password_hash(password))
+    user = User(**user_data_, password_hash=get_password_hash(password))
     db.add(user)
     db.commit()
 
 
 @users_route.post("/token", status_code=status.HTTP_200_OK)
 async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm=Depends(), db: Session=Depends(models.get_db),
+    form_data: OAuth2PasswordRequestForm=Depends(), db: Session=Depends(get_db),
 ):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
@@ -54,7 +50,7 @@ async def login_for_access_token(
 
 
 @users_route.put("/{user_id}", status_code=status.HTTP_200_OK)
-def handle_update_user(user_id, user_data: UserSchema, db: Session=Depends(models.get_db)):
+def handle_update_user(user_id, user_data: UserSchema, db: Session=Depends(get_db)):
     user = get_user(db, user_id)
     if user is None:
         raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found.")
@@ -65,7 +61,7 @@ def handle_update_user(user_id, user_data: UserSchema, db: Session=Depends(model
 
 
 @users_route.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def handle_delete_user(user_id, user_data: UserSchema, db: Session=Depends(models.get_db)):
+def handle_delete_user(user_id, user_data: UserSchema, db: Session=Depends(get_db)):
     user = get_user(db, user_id)
     if user is None:
         raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found.")
@@ -75,7 +71,7 @@ def handle_delete_user(user_id, user_data: UserSchema, db: Session=Depends(model
 
 
 @users_route.get("/{user_id}", status_code=status.HTTP_200_OK)
-def handle_get_user(user_id: int, db: Session=Depends(models.get_db)):
+def handle_get_user(user_id: int, db: Session=Depends(get_db)):
     user = get_user(db, user_id)
     if user is None:
         raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found.")
@@ -83,7 +79,7 @@ def handle_get_user(user_id: int, db: Session=Depends(models.get_db)):
 
 
 @users_route.get("/posts", status_code=status.HTTP_200_OK)
-def get_user_posts(user: dict=Depends(get_current_user), db: Session=Depends(models.get_db)):
+def get_user_posts(user: dict=Depends(get_current_user), db: Session=Depends(get_db)):
     if user is None:
         raise HTTPException(status_code=404, detail=f"User not found.")
 
