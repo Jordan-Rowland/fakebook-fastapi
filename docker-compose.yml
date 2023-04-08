@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./fakebookapi
+    command: uvicorn app:app --reload --workers 1 --host 0.0.0.0 --port 8000
+    volumes:
+      - ./fakebookapi:/usr/src/app
+    ports:
+      - 8004:8000
+    environment:
+      - ENVIRONMENT=dev
+      - TESTING=0
+      - DATABASE_URL=mysql+pymysql://root:rootpassword@web-db:3306/web_dev
+      - DATABASE_TEST_URL=mysql+pymysql://root:rootpassword@web-db:3306/web_test
+    depends_on:
+      - web-db
+
+  web-db:
+    build:
+      context: ./fakebookapi/db
+      dockerfile: Dockerfile
+    expose:
+      - 3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword

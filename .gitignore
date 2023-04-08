@@ -1,1 +1,3 @@
-__pycache__l
+__pycache__/*
+venv/*
+.vscode/*
