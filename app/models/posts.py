@@ -8,7 +8,7 @@ class Post(Base):
     __tablename__ = "posts"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
-    content = sa.Column(sa.Text(), index=True, nullable=False)
+    content = sa.Column(sa.Text(), nullable=False)
     user_id = sa.Column(sa.Integer(), sa.ForeignKey("users.id"), nullable=False)
     parent_id = sa.Column(sa.Integer(), nullable=True)
     draft = sa.Column(sa.Boolean(), default=False)

@@ -15,7 +15,7 @@ class User(Base):
     last_name = sa.Column(sa.String(64), nullable=False)
     location = sa.Column(sa.String(64))
     password_hash = sa.Column(sa.String(128), nullable=False)
-    photo = sa.Column(sa.String())
+    photo = sa.Column(sa.String(64))
     about_me = sa.Column(sa.Text(), default=None)
     member_since = sa.Column(sa.DateTime(), default=datetime.utcnow)
     last_seen = sa.Column(sa.DateTime(), default=datetime.utcnow)

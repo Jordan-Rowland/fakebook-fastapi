@@ -1,3 +1,5 @@
+import os
+
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -9,12 +11,12 @@ from sqlalchemy.orm import sessionmaker
 # mysql
 # SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:rootpassword@localhost:3306/fakebook"
 # Change `localhost` to `host.docker.internal` for Docker
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:rootpassword@host.docker.internal:3306/fakebook"
+# SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:rootpassword@host.docker.internal:3306/fakebook"
+SQLALCHEMY_DATABASE_URL = os.environ.get("DATABASE_URL")
 engine = sa.create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
-Base.metadata.create_all(bind=engine)
 
 
 def get_db():
