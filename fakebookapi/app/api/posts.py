@@ -21,14 +21,14 @@ posts_route = APIRouter(
 def get_posts(
     ##!! Need to implement for all calls
     #! Probably middleware?
+    include_deleted: bool=False,
     user: dict=Depends(get_current_user),
     db: Session=Depends(get_db),
-    includeDeleted: bool=False,
 ):
     if user is None:
         raise HTTPException(status_code=400, detail=f"No valid user.")
-    query = db.query(Post)
-    if not includeDeleted:
+    query = db.query(Post).filter(Post.draft == False)
+    if not include_deleted:
         query = query.filter(Post.deleted_at == None)
     return query.all()
 

@@ -45,7 +45,12 @@ async def login_for_access_token(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     token_expires = timedelta(minutes=60 * 24 * 3)  # 3 days valid token
-    token = create_access_token(user.username, user.id, expires_delta=token_expires)
+    token = create_access_token(
+        user.username,
+        user.id,
+        # user.admin,
+        expires_delta=token_expires
+    )
     return {"token": token}
 
 

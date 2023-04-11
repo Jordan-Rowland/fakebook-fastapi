@@ -14,3 +14,12 @@ VALUES
 	(12, 'string@mail.com', 'stringstrong', 'string', 'strong', NULL, '$2b$12$mD3uQeOjQTvuuUoWpj1QyeKBn2X5hhBGaP/Qt88DEMH3E3qBgw/k.', NULL, NULL, '2023-04-07', '2023-04-07', 1, 0);
 
 
+
+INSERT INTO `posts` (`id`, `content`, `user_id`, `parent_id`, `created_at`, `deleted_at`, `draft`)
+VALUES
+	(1, 'My first test post', 1, NULL, '2023-04-07 22:48:31', NULL, 0),
+	(2, 'Second post, deleted', 1, NULL, '2023-04-07 22:53:54', '2023-04-07 16:08:07', 0),
+	(3, 'child post', 1, 2, '2023-04-07 22:53:54', NULL, 0),
+	(4, 'whoopsie doodle!', 1, NULL, '2023-04-07 22:53:54', NULL, 0),
+	(5, 'My second! test post', 1, NULL, '2023-04-07 23:04:18', NULL, 0);
+

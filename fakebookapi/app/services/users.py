@@ -13,7 +13,6 @@ from app import models
 SECRET_KEY = os.getenv("SECRET_KEY") or "mysecretkey"
 ALGORITHM = "HS256"
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-# models.Base.metadata.create_all(bind=engine)
 oath2_bearer = OAuth2PasswordBearer(tokenUrl="token")
 
 
@@ -33,7 +32,11 @@ def authenticate_user(username: str, password: str, db):
 
 
 def create_access_token(username: str, user_id: int, expires_delta: Optional[timedelta]=None):
-    encode = {"sub": username, "id": user_id}
+    encode = {
+        "sub": username,
+        "id": user_id,
+        # "admin": 
+    }
     encode["exp"] = datetime.utcnow() + timedelta(minutes=15)
     if expires_delta:
         encode["exp"] = datetime.utcnow() + expires_delta
