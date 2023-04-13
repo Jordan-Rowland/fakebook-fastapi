@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from app.models import get_db
+from app.models.posts import Post
 from app.models.users import User
 from app.schemas.users import CreateUserSchema, UserSchema
 from app.services.users import (
@@ -43,7 +44,7 @@ async def login_for_access_token(
 ):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="No Valid User.")
     token_expires = timedelta(minutes=60 * 24 * 3)  # 3 days valid token
     token = create_access_token(
         user.username,
@@ -88,4 +89,4 @@ def get_user_posts(user: dict=Depends(get_current_user), db: Session=Depends(get
     if user is None:
         raise HTTPException(status_code=404, detail=f"User not found.")
 
-    return db.query(models.Post).filter(models.Post.user_id == user["id"]).all()
+    return db.query(Post).filter(Post.user_id == user["id"]).all()

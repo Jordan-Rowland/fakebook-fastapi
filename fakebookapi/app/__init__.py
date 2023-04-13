@@ -3,16 +3,16 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import users, posts, follows
-from app.models import init_db
+from app.api import follows, ping, posts, users
 from app.config import log
+from app.models import init_db
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     log.info("Starting up...")
     init_db()
-    yield
+    yield  # App runs here
     log.info("Shutting down...")
 
 
@@ -27,9 +27,10 @@ def create_app():
         allow_credentials=True,
     )
 
-    app.include_router(users.users_route)
-    app.include_router(posts.posts_route)
     app.include_router(follows.follows_route)
+    app.include_router(ping.ping_route)
+    app.include_router(posts.posts_route)
+    app.include_router(users.users_route)
 
     return app
 

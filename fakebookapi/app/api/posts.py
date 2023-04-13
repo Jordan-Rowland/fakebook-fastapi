@@ -26,7 +26,7 @@ def get_posts(
     db: Session=Depends(get_db),
 ):
     if user is None:
-        raise HTTPException(status_code=400, detail=f"No valid user.")
+        raise HTTPException(status_code=400, detail=f"User not found.")
     query = db.query(Post).filter(Post.draft == False)
     if not include_deleted:
         query = query.filter(Post.deleted_at == None)
@@ -36,14 +36,14 @@ def get_posts(
 @posts_route.get("/{post_id}")
 def get_post(post_id: int, user: dict=Depends(get_current_user), db: Session=Depends(get_db)):
     if user is None:
-        raise HTTPException(status_code=400, detail=f"No valid user.")
+        raise HTTPException(status_code=400, detail=f"User not found.")
     return get_post_by_id(db, post_id)
 
 
 @posts_route.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(post_id: int, user: dict=Depends(get_current_user), db: Session=Depends(get_db)):
     if user is None:
-        raise HTTPException(status_code=400, detail=f"No valid user.")
+        raise HTTPException(status_code=400, detail=f"User not found.")
     post = (db.query(Post)
             .filter(Post.id == post_id)
             .filter(Post.user_id == user["id"])
