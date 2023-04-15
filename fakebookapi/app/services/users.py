@@ -48,9 +48,14 @@ def get_current_user(token: str=Depends(oath2_bearer)):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         user_id: str = payload.get("id")
+        # admin: bool = payload.get("admin")
         if username is None or user_id is None:
             raise HTTPException(status_code=404, detail="User not found.")
-        return {"username": username, "id": user_id}
+        return {
+            "username": username,
+            "id": user_id,
+            # "admin": admin
+        }
     except JWTError:
         raise HTTPException(status_code=404, detail="User not found.")
 

@@ -17,8 +17,8 @@ class User(Base):
     password_hash = sa.Column(sa.String(128), nullable=False)
     photo = sa.Column(sa.String(64))
     about_me = sa.Column(sa.Text(), default=None)
-    member_since = sa.Column(sa.DateTime(), default=datetime.utcnow)
-    last_seen = sa.Column(sa.DateTime(), default=datetime.utcnow)
+    member_since = sa.Column(sa.DateTime(), default=datetime.now)
+    last_seen = sa.Column(sa.DateTime(), default=datetime.now)
     active = sa.Column(sa.Boolean(), default=True)
     private = sa.Column(sa.Boolean(), default=False)
 

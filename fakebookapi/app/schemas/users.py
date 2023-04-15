@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 class CreateUserSchema(BaseModel):
     username: str
-    email: Optional[str]
+    email: str
     first_name: str
     last_name: str
     password: str

@@ -9,4 +9,4 @@ class Follow(Base):
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
     follower_id = sa.Column(sa.Integer(), sa.ForeignKey("users.id"), primary_key=True)
     followed_id = sa.Column(sa.Integer(), sa.ForeignKey("users.id"), primary_key=True)
-    created_at = sa.Column(sa.DateTime, default=datetime.utcnow)
+    created_at = sa.Column(sa.DateTime, default=datetime.now)

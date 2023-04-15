@@ -12,7 +12,13 @@ class Post(Base):
     user_id = sa.Column(sa.Integer(), sa.ForeignKey("users.id"), nullable=False)
     parent_id = sa.Column(sa.Integer(), nullable=True)
     draft = sa.Column(sa.Boolean(), default=False)
-    created_at = sa.Column(sa.DateTime(), nullable=False, default=datetime.utcnow)
+    created_at = sa.Column(sa.DateTime(), nullable=False, default=datetime.now)
     deleted_at = sa.Column(sa.DateTime(), default=None)
 
     user = relationship("User", back_populates="posts", lazy=True)
+
+    def update(self, post_data):
+        self.content = post_data["content"]
+
+    def delete(self):
+        self.deleted_at = datetime.now()
