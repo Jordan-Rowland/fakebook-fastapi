@@ -20,8 +20,8 @@ services:
     build:
       context: ./fakebookapi/db
       dockerfile: Dockerfile
-    expose:
-      - 3306
+    ports:
+      - 4306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=rootpassword
     volumes:

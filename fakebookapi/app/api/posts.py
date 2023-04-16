@@ -31,18 +31,35 @@ def create_post(
 def get_posts(
     db: Session=Depends(get_db),
     include_deleted: bool=False,
-    page: int = 1,
+    # page: int = 1,
     limit: int = 10,
+    after_id:int = 0
 ):
-    posts = postservice.get_posts(db, include_deleted, page, limit)
+    posts = postservice.get_posts(db, include_deleted, limit, after_id)
+    paging_info = {
+        "limit": limit,
+        "after_id": posts[0].id - 1,
+        # "before_id": posts[0].id - 1,
+        "last": posts[-1].id,
+        "count": len(posts),
+        }
     response = {
         "data": parse_obj_as(List[PostResponseSchema], posts),
-        "pagination": {
-            "limit": limit,
-            "page": page,
-            "count": len(posts),
-            "prev": f"/posts?limit=3&page={page - 1}" if page > 1 else None,
-            "next": f"/posts?limit=3&page={page + 1}",
+        # "pagination": get_pagination_info(paging_info)
+        "pagination": {  #  make a schema for this and extract to function for reuse
+            **paging_info,
+            "prev": (
+                f"/posts?limit={limit}&after_id={paging_info['after_id'] - paging_info['count']}"
+                if paging_info["after_id"] <= after_id
+                else None
+            ),
+            "next": (
+                f"/posts?limit={limit}&after_id={paging_info['last']}"
+                if paging_info["count"] == limit
+                else None
+            ),
+            # Figure out how to find the end so next == None
+
         }
     }
     return response

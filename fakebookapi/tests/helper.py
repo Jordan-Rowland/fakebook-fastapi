@@ -1,3 +1,5 @@
+from datetime import datetime as dt
+
 from app.models.posts import Post
 from app.models.users import User
 from tests.conftest import USER_ID
@@ -39,4 +41,17 @@ def create_posts(session, num_posts):
     posts = []
     for i in range(num_posts):
         posts.append(create_post(session, {"content": f"post # {i+1}"}))
+    return posts
+
+
+def create_posts_with_deleted(session, num_posts):
+    posts = []
+    for i in range(num_posts):
+        posts.append(create_post(
+            session,
+            {
+                "content": f"post # {i+1}",
+                "deleted_at": dt.now() if i <= 6 else None,
+            }
+        ))
     return posts

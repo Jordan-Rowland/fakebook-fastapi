@@ -49,17 +49,18 @@ def test_get_posts(client, session):
 
 
 def test_get_paginated_posts(client, session):
+    #! Parameterize for more tests, make sure prev/next work
     test_helper.create_user(session)
-    test_helper.create_posts(session, 15)
-    response = client.get("/posts?limit=3&page=2")
+    test_helper.create_posts_with_deleted(session, 15)
+    response = client.get("/posts?limit=3&after_id=10")
     assert response.status_code == 200
     data = response.json()["data"]
-    assert data[0]["id"] == 4
-    assert data[1]["id"] == 5
-    assert data[2]["id"] == 6
+    assert data[0]["id"] == 11
+    assert data[1]["id"] == 12
+    assert data[2]["id"] == 13
     pagination = response.json()["pagination"]
-    assert pagination["prev"] == "/posts?limit=3&page=1"
-    assert pagination["next"] == "/posts?limit=3&page=3"
+    assert pagination["prev"] == "/posts?limit=3&after_id=7"
+    assert pagination["next"] == '/posts?limit=3&after_id=13'
     assert pagination["count"] == len(data) == 3
     
 

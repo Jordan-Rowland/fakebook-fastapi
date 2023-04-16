@@ -20,8 +20,9 @@ class PostResponseSchema(BaseModel):
     content: str
     user_id: int
     parent_id: int | None
-    draft: bool
+    draft: bool  # Change this to status: enum for PUBLISHED | DRAFT | DELETED
     created_at: datetime
+    deleted_at: datetime | None
 
     class Config:
         orm_mode = True
