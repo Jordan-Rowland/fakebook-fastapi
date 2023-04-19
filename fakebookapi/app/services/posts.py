@@ -5,12 +5,13 @@ from sqlalchemy.orm import Session
 from app.models.posts import Post
 
 
-def get_posts(db, include_deleted=False, limit=10, after_id=0):
+def get_posts(db, include_deleted=False, limit=10, before_id=None):
     query = db.query(Post).filter(Post.draft == False)
     if not include_deleted:
         query = query.filter(Post.deleted_at == None)
-    # Return newest posts first, update pagination to go backwards
-    return query.filter(after_id < Post.id).order_by(desc(Post.id)).limit(limit).all()
+    if before_id is not None:
+        query = query.filter(Post.id < before_id)
+    return query.order_by(desc(Post.id)).limit(limit).all()
 
 
 def get_post_by_id(db: Session, post_id: int):

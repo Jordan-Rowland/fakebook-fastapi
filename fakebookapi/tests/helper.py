@@ -50,8 +50,8 @@ def create_posts_with_deleted(session, num_posts):
         posts.append(create_post(
             session,
             {
-                "content": f"post # {i+1}",
-                "deleted_at": dt.now() if i <= 6 else None,
+                "content": f"post #{i+1}",
+                "deleted_at": dt.now() if i >= 6 else None,
             }
         ))
     return posts

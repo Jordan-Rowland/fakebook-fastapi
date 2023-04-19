@@ -31,38 +31,42 @@ def create_post(
 def get_posts(
     db: Session=Depends(get_db),
     include_deleted: bool=False,
-    # page: int = 1,
     limit: int = 10,
-    after_id:int = 0
+    before_id: int | None = None
 ):
-    posts = postservice.get_posts(db, include_deleted, limit, after_id)
+    if before_id == 1:
+        return {
+            "data": [],
+            "pagination": {"prev": f"/posts?limit={limit}&before_id={limit}"}
+        }
+    posts = postservice.get_posts(db, include_deleted, limit, before_id)
     paging_info = {
         "limit": limit,
-        "after_id": posts[0].id - 1,
-        # "before_id": posts[0].id - 1,
-        "last": posts[-1].id,
+        "before_id": posts[0].id + 1 if posts else before_id,
+        "last": posts[-1].id if posts else 0,
         "count": len(posts),
-        }
+    }
     response = {
         "data": parse_obj_as(List[PostResponseSchema], posts),
-        # "pagination": get_pagination_info(paging_info)
-        "pagination": {  #  make a schema for this and extract to function for reuse
-            **paging_info,
-            "prev": (
-                f"/posts?limit={limit}&after_id={paging_info['after_id'] - paging_info['count']}"
-                if paging_info["after_id"] <= after_id
-                else None
-            ),
-            "next": (
-                f"/posts?limit={limit}&after_id={paging_info['last']}"
-                if paging_info["count"] == limit
-                else None
-            ),
-            # Figure out how to find the end so next == None
-
-        }
+        "pagination": get_pagination_info(paging_info, before_id, limit)
     }
     return response
+
+
+def get_pagination_info(paging_info, before_id, limit):
+    return {
+        **paging_info,
+        "next": (
+            f"/posts?limit={limit}&before_id={paging_info['last']}"
+            if (paging_info['last'] > 1)
+            else None
+        ),
+        "prev": (
+            f"/posts?limit={limit}&before_id={paging_info['before_id'] + limit}"
+            if paging_info["before_id"] == (before_id or float("inf"))
+            else None
+        ),
+    }
 
 
 @posts_route.get("/{post_id}", response_model=PostResponseSchema)

@@ -1,6 +1,7 @@
 import json
 
 from app.models.posts import Post
+import pytest
 from tests import helper as test_helper
 from tests.conftest import USER_ID
 
@@ -47,20 +48,27 @@ def test_get_posts(client, session):
     assert response.status_code == 200
     assert len(response.json()["data"]) == 2
 
-
-def test_get_paginated_posts(client, session):
-    #! Parameterize for more tests, make sure prev/next work
+@pytest.mark.parametrize(
+    "after_query, id_1, id_2, id_3, prev_response, next_response",
+    [
+        (4, 3, 2, 1, "/posts?limit=3&before_id=7", None),
+        (7, 6, 5, 4, "/posts?limit=3&before_id=10", "/posts?limit=3&before_id=4"),
+        (9, 6, 5, 4, None, "/posts?limit=3&before_id=4"),
+    ]
+)
+def test_get_paginated_posts(
+        client, session, after_query, id_1, id_2, id_3, prev_response, next_response):
     test_helper.create_user(session)
     test_helper.create_posts_with_deleted(session, 15)
-    response = client.get("/posts?limit=3&after_id=10")
+    response = client.get(f"/posts?limit=3&before_id={after_query}")
     assert response.status_code == 200
     data = response.json()["data"]
-    assert data[0]["id"] == 11
-    assert data[1]["id"] == 12
-    assert data[2]["id"] == 13
+    assert data[0]["id"] == id_1
+    assert data[1]["id"] == id_2
+    assert data[2]["id"] == id_3
     pagination = response.json()["pagination"]
-    assert pagination["prev"] == "/posts?limit=3&after_id=7"
-    assert pagination["next"] == '/posts?limit=3&after_id=13'
+    assert pagination["prev"] == prev_response
+    assert pagination["next"] == next_response
     assert pagination["count"] == len(data) == 3
     
 
