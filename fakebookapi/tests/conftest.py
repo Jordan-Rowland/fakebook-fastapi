@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from app import create_app
 from app.config import get_settings, Settings
 from app.models import Base, get_db, init_db
-from app.services.users import get_current_user
+from app.services.auth import get_current_user
 
 USER_ID = 108
 

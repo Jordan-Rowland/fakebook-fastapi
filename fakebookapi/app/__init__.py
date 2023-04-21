@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import follows, ping, posts, users
+from app.api import auth, follows, ping, posts, users
 from app.config import log
 from app.models import engine, init_db
 
@@ -27,6 +27,7 @@ def create_app():
         allow_credentials=True,
     )
 
+    app.include_router(auth.auth_route)
     app.include_router(follows.follows_route)
     app.include_router(ping.ping_route)
     app.include_router(posts.posts_route)

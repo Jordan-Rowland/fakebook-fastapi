@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.models import get_db
 from app.models.follows import Follow
-from app.services.users import get_current_user
+from app.services.auth import get_current_user
 
 
 follows_route = APIRouter(

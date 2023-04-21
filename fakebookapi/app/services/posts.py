@@ -24,6 +24,25 @@ def get_post_by_id(db: Session, post_id: int):
     return post
 
 
+def get_user_post_by_id(db: Session, post_id: int, user):
+    post = (
+        db.query(Post)
+        .filter(Post.id == post_id)
+        .filter(Post.user_id == user["id"])
+        .filter(Post.deleted_at == None)
+        .first()
+    )
+    if not post:
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                f"Post {post_id} not found. This post may not exist "
+                "or you do not have permissions to access it."
+            )
+        )
+    return post
+
+
 def create_post(db: Session, post_data, user):
     post = Post(**post_data.dict(), user_id=user["id"])
     db.add(post)
@@ -32,29 +51,13 @@ def create_post(db: Session, post_data, user):
 
 
 def update_post(db, post_id, post_data, user):
-    post = (
-        db.query(Post)
-        .filter(Post.id == post_id)
-        .filter(Post.user_id == user["id"])
-        .filter(Post.deleted_at == None)
-        .first()
-    )
-    if not post:
-        raise HTTPException(status_code=404, detail=f"Post {post_id} not found.")
+    post = get_user_post_by_id(db, post_id, user)
     post.update(post_data.dict())
     db.commit()
     return get_post_by_id(db, post.id)
 
 
 def delete_post(db, post_id, user):
-    post = (
-        db.query(Post)
-        .filter(Post.id == post_id)
-        .filter(Post.user_id == user["id"])
-        .filter(Post.deleted_at == None)
-        .first()
-    )
-    if not post:
-        raise HTTPException(status_code=404, detail=f"Post {post_id} not found.")
+    post = get_user_post_by_id(db, post_id, user)
     post.delete()
     db.commit()

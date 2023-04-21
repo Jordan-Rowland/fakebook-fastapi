@@ -6,8 +6,9 @@ from sqlalchemy.orm import Session
 
 from app.models import get_db
 from app.schemas.posts import CreatePostSchema, PostResponseSchema, UpdatePostSchema
-from app.services.users import get_current_user
 from app.services import posts as postservice
+from app.services.auth import get_current_user
+from app.services.helper import get_pagination_info
 
 
 posts_route = APIRouter(
@@ -53,22 +54,6 @@ def get_posts(
     return response
 
 
-def get_pagination_info(paging_info, before_id, limit):
-    return {
-        **paging_info,
-        "next": (
-            f"/posts?limit={limit}&before_id={paging_info['last']}"
-            if (paging_info['last'] > 1)
-            else None
-        ),
-        "prev": (
-            f"/posts?limit={limit}&before_id={paging_info['before_id'] + limit}"
-            if paging_info["before_id"] == (before_id or float("inf"))
-            else None
-        ),
-    }
-
-
 @posts_route.get("/{post_id}", response_model=PostResponseSchema)
 def get_post(post_id: int, db: Session=Depends(get_db)):
     return postservice.get_post_by_id(db, post_id)
@@ -81,6 +66,7 @@ def update_post(
     db: Session=Depends(get_db),
     user: dict=Depends(get_current_user),
 ):
+    print(user)
     return postservice.update_post(db, post_id, update_data, user)
 
 
