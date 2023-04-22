@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 
-from app import models
+from app.models.users import User
 
 
 SECRET_KEY = os.getenv("SECRET_KEY") or "mysecretkey"  #TODO: Update this
@@ -25,7 +25,7 @@ def verify_password(plain_password, password_hash):
 
 
 def authenticate_user(username: str, password: str, db):
-    user = db.query(models.User).filter(models.User.username == username).first()
+    user = db.query(User).filter(User.username == username).first()
     if not user or not verify_password(password, user.password_hash):
         return False
     return user

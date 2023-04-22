@@ -24,7 +24,7 @@ def create_post(
     db: Session=Depends(get_db),
     user: dict=Depends(get_current_user),
 ):
-    post = postservice.create_post(db, post_data, user)
+    post = postservice.create_post(db, post_data.dict(), user["id"])
     return PostResponseSchema.from_orm(post)
 
 
@@ -35,10 +35,10 @@ def get_posts(
     limit: int = 10,
     before_id: int | None = None
 ):
-    if before_id == 1:
+    if before_id == 1:  # TODO: Do something else here.
         return {
             "data": [],
-            "pagination": {"prev": f"/posts?limit={limit}&before_id={limit}"}
+            "pagination": {"prev": f"/posts?limit={limit}&before_id={limit}", "count": None}
         }
     posts = postservice.get_posts(db, include_deleted, limit, before_id)
     paging_info = {
@@ -66,10 +66,9 @@ def update_post(
     db: Session=Depends(get_db),
     user: dict=Depends(get_current_user),
 ):
-    print(user)
-    return postservice.update_post(db, post_id, update_data, user)
+    return postservice.update_post(db, post_id, update_data.dict(), user["id"])
 
 
 @posts_route.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(post_id: int, db: Session=Depends(get_db), user: dict=Depends(get_current_user)):
-    postservice.delete_post(db, post_id, user)
+    postservice.delete_post(db, post_id, user["id"])

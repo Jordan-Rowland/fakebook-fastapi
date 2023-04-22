@@ -5,8 +5,8 @@ from app.models import get_db
 from app.models.posts import Post
 from app.models.users import User
 from app.schemas.users import CreateUserSchema, UserSchema
-from app.services.auth import get_current_user, get_password_hash
-from app.services.users import get_user
+from app.services.auth import get_current_user
+from app.services.users import create_user, get_user
 
 
 users_route = APIRouter(
@@ -18,11 +18,7 @@ users_route = APIRouter(
 
 @users_route.post("", status_code=status.HTTP_201_CREATED)
 async def add_user(user_data: CreateUserSchema, db: Session=Depends(get_db)):
-    user_data_ = user_data.dict()
-    password = user_data_.pop("password")
-    user = User(**user_data_, password_hash=get_password_hash(password))
-    db.add(user)
-    db.commit()
+    create_user(user_data.dict(), db)
 
 
 @users_route.get("", status_code=status.HTTP_200_OK)
@@ -30,7 +26,7 @@ async def get_users(db: Session=Depends(get_db)):
     return db.query(User).all()
 
 
-@users_route.put("/me/", status_code=status.HTTP_200_OK)
+@users_route.put("/me", status_code=status.HTTP_200_OK)
 def handle_update_user(
     user_data: UserSchema,
     db: Session=Depends(get_db),

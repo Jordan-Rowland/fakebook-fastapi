@@ -9,7 +9,6 @@ from tests.conftest import USER_ID
 def test_create_post(client, session):
     test_helper.create_user(session)
     response = client.post("/posts", data=json.dumps({"content": "This is a test post"}))
-    print(response.json())
     assert response.status_code == 200
     assert response.json()["content"] == "This is a test post"
     assert response.json()["user_id"] == USER_ID
@@ -90,7 +89,7 @@ def test_cannot_update_other_users_post(client, session):
     other_user = test_helper.create_user(session, {"id": 255})
     print(other_user.id)
     updated_post_content = "updated post!"
-    post = test_helper.create_post(session, {"user_id": other_user.id})
+    post = test_helper.create_post(session, user_id=other_user.id)
     response = client.patch(f"/posts/{post.id}", data=json.dumps({"content": updated_post_content}))
     assert response.status_code == 404
     assert response.json()["detail"] == (
@@ -110,7 +109,7 @@ def test_delete_post(client, session):
 
 def test_cannot_delete_other_users_post(client, session):
     other_user = test_helper.create_user(session, {"id": 255})
-    post = test_helper.create_post(session, {"user_id": other_user.id})
+    post = test_helper.create_post(session, user_id=other_user.id)
     response = client.delete(f"/posts/{post.id}")
     print(response.json())
     assert response.status_code == 404

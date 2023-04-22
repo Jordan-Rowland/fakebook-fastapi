@@ -14,7 +14,7 @@ def get_posts(db, include_deleted=False, limit=10, before_id=None):
     return query.order_by(desc(Post.id)).limit(limit).all()
 
 
-def get_post_by_id(db: Session, post_id: int):
+def get_post_by_id(db, post_id):
     post = (db.query(Post)
             .filter(Post.id == post_id)
             .filter(Post.deleted_at == None)
@@ -24,14 +24,26 @@ def get_post_by_id(db: Session, post_id: int):
     return post
 
 
-def get_user_post_by_id(db: Session, post_id: int, user):
+def get_user_post_by_id(db, post_id, user_id):
     post = (
         db.query(Post)
         .filter(Post.id == post_id)
-        .filter(Post.user_id == user["id"])
+        .filter(Post.user_id == user_id)
         .filter(Post.deleted_at == None)
         .first()
     )
+    return post
+
+
+def create_post(db, post_data, user_id):
+    post = Post(**post_data, user_id=user_id)
+    db.add(post)
+    db.commit()
+    return get_user_post_by_id(db, post.id, user_id)
+
+
+def update_post(db, post_id, post_data, user_id):
+    post = get_user_post_by_id(db, post_id, user_id)
     if not post:
         raise HTTPException(
             status_code=404,
@@ -40,24 +52,20 @@ def get_user_post_by_id(db: Session, post_id: int, user):
                 "or you do not have permissions to access it."
             )
         )
-    return post
-
-
-def create_post(db: Session, post_data, user):
-    post = Post(**post_data.dict(), user_id=user["id"])
-    db.add(post)
+    post.update(post_data)
     db.commit()
-    return get_post_by_id(db, post.id)
+    return get_user_post_by_id(db, post.id, user_id)
 
 
-def update_post(db, post_id, post_data, user):
-    post = get_user_post_by_id(db, post_id, user)
-    post.update(post_data.dict())
-    db.commit()
-    return get_post_by_id(db, post.id)
-
-
-def delete_post(db, post_id, user):
-    post = get_user_post_by_id(db, post_id, user)
+def delete_post(db, post_id, user_id):
+    post = get_user_post_by_id(db, post_id, user_id)
+    if not post:
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                f"Post {post_id} not found. This post may not exist "
+                "or you do not have permissions to access it."
+            )
+        )
     post.delete()
     db.commit()
