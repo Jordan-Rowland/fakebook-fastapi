@@ -45,7 +45,7 @@ def test_get_posts(client, session):
     test_helper.create_posts(session, 2)
     test_helper.create_post(
         session,
-        {"content": "this is a draft post that will not be returned", "draft": True},
+        {"content": "this is a draft post that will not be returned", "status": "DRAFT"},
     )
     response = client.get("/posts")
     assert response.status_code == 200

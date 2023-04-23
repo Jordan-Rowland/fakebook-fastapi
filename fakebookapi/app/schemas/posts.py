@@ -1,13 +1,15 @@
 from datetime import datetime
-
 from typing import Optional
+
 from pydantic import BaseModel, validator
+
+from app.services.helper import PostStatusEnum
 
 
 class CreatePostSchema(BaseModel):
     content: str
     parent_id: Optional[int]
-    draft: Optional[bool] = False
+    status: str = PostStatusEnum.PUBLISHED
     created_at: datetime = datetime.now()
 
 
@@ -20,7 +22,7 @@ class PostResponseSchema(BaseModel):
     content: str
     user_id: int
     parent_id: int | None
-    draft: bool  # Change this to status: enum for PUBLISHED | DRAFT | DELETED
+    status: str
     created_at: datetime
     deleted_at: datetime | None
 

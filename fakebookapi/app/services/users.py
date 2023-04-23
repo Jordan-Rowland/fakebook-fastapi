@@ -2,6 +2,7 @@ from sqlalchemy import desc
 
 from app.models.users import User
 from app.services.auth import get_password_hash
+from app.services.helper import UserStatusEnum
 
 
 def create_user(user_data, db):
@@ -18,9 +19,9 @@ def get_user(db, user_id):
 
 
 def get_users(db, include_deleted=False, limit=10, before_id=None):
-    query = db.query(User).filter(User.private == False)
+    query = db.query(User).filter(User.status != UserStatusEnum.PRIVATE)
     if not include_deleted:
-        query = query.filter(User.active == True)
+        query = query.filter(User.status != UserStatusEnum.DELETED)
     if before_id is not None:
         query = query.filter(User.id < before_id)
     return query.order_by(desc(User.id)).limit(limit).all()

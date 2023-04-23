@@ -22,13 +22,17 @@ depends_on = None
 def upgrade() -> None:
     op.drop_column("posts", "draft")
     op.add_column(
-        "posts", sa.Column("status", sa.String(12), nullable=False, default=PostStatusEnum.PUBLISHED)
+        "posts", sa.Column(
+            "status", sa.String(12), nullable=False, default=PostStatusEnum.PUBLISHED
+        )
     )
     
     op.drop_column("users", "active")
     op.drop_column("users", "private")
     op.add_column(
-        "users", sa.Column("status", sa.String(12), nullable=False, default=UserStatusEnum.ACTIVE)
+        "users", sa.Column(
+            "status", sa.String(12), nullable=False, default=UserStatusEnum.ACTIVE
+        )
     )
 
 

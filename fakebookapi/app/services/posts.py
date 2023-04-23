@@ -2,10 +2,11 @@ from fastapi import HTTPException
 from sqlalchemy import desc
 
 from app.models.posts import Post
+from app.services.helper import PostStatusEnum
 
 
 def get_posts(db, include_deleted=False, limit=10, before_id=None):
-    query = db.query(Post).filter(Post.draft == False)
+    query = db.query(Post).filter(Post.status == PostStatusEnum.PUBLISHED)
     if not include_deleted:
         query = query.filter(Post.deleted_at == None)
     if before_id is not None:

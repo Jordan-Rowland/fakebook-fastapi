@@ -36,7 +36,6 @@ def test_get_paginated_users(
         client, session, before_query, user_ids, prev_response, next_response):
     test_helper.create_users_with_deleted(session, 6)
     response = client.get(f"/users?limit=3&before_id={before_query}")
-    # response = client.get(f"/users?limit=3")
     assert response.status_code == 200
     data = response.json()["data"]
     print()

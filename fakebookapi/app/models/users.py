@@ -30,8 +30,6 @@ class User(Base):
         for k, v in post_data.items():
             if v:
                 setattr(self, k, v)
-        print(f"{self.__dict__=}")
 
     def delete(self):
-        ...
-        # self.status = datetime.now()  UserStatusEnum.DELETED
+        self.status = UserStatusEnum.DELETED

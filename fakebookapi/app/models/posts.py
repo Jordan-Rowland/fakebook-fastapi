@@ -22,4 +22,5 @@ class Post(Base):
         self.content = post_data["content"]
 
     def delete(self):
+        self.status = PostStatusEnum.DELETED
         self.deleted_at = datetime.now()

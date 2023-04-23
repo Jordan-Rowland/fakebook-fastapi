@@ -1,4 +1,5 @@
-from enum import StrEnum
+from enum import auto, StrEnum
+
 
 def get_pagination_info(resource_type, paging_info, before_id, limit):
     return {
@@ -22,9 +23,9 @@ class UserStatusEnum(StrEnum):
     def get_enums(cls):
         return (cls.ACTIVE, cls.PRIVATE, cls.DELETED)
 
-    ACTIVE = "ACTIVE"
-    PRIVATE = "PRIVATE"
-    DELETED = "DELETED"
+    ACTIVE = auto()
+    PRIVATE = auto()
+    DELETED = auto()
 
 
 class PostStatusEnum(StrEnum):
@@ -33,6 +34,6 @@ class PostStatusEnum(StrEnum):
     def get_enums(cls):
         return (cls.PUBLISHED, cls.DRAFT, cls.DELETED)
 
-    PUBLISHED = "PUBLISHED"
-    DRAFT = "DRAFT"
-    DELETED = "DELETED"
+    PUBLISHED = auto()
+    DRAFT = auto()
+    DELETED = auto()
