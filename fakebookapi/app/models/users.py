@@ -4,6 +4,7 @@ import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
 from app.models import Base
+from app.services.helper import UserStatusEnum
 
 
 class User(Base):
@@ -20,9 +21,7 @@ class User(Base):
     about_me = sa.Column(sa.Text(), default=None)
     member_since = sa.Column(sa.DateTime(), default=datetime.now)
     last_seen = sa.Column(sa.DateTime(), default=datetime.now)
-    # status = sa.Column(sa.String(64))  --> ACTIVE | DELETED | (PRIVATE?)
-    active = sa.Column(sa.Boolean(), default=True)
-    private = sa.Column(sa.Boolean(), default=False)
+    status = sa.Column(sa.String(11), nullable=False, default=UserStatusEnum.ACTIVE)
 
     posts = relationship("Post", back_populates="user", lazy=True)
 
