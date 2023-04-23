@@ -32,11 +32,7 @@ def authenticate_user(username: str, password: str, db):
 
 
 def create_access_token(username: str, user_id: int, expires_delta: Optional[timedelta]=None):
-    encode = {
-        "sub": username,
-        "id": user_id,
-        # "admin": 
-    }
+    encode = {"sub": username, "id": user_id}
     encode["exp"] = datetime.utcnow() + timedelta(minutes=15)
     if expires_delta:
         encode["exp"] = datetime.utcnow() + expires_delta
@@ -48,13 +44,8 @@ def get_current_user(token: str=Depends(oath2_bearer)):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         user_id: str = payload.get("id")
-        # admin: bool = payload.get("admin")
         if username is None or user_id is None:
             raise HTTPException(status_code=404, detail="User not found.")
-        return {
-            "username": username,
-            "id": user_id,
-            # "admin": admin
-        }
+        return {"username": username, "id": user_id}
     except JWTError:
         raise HTTPException(status_code=404, detail="User not found.")

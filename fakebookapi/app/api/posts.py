@@ -35,7 +35,7 @@ def get_posts(
     limit: int = 10,
     before_id: int | None = None
 ):
-    if before_id == 1:  # TODO: Do something else here.
+    if before_id == 1:
         return {
             "data": [],
             "pagination": {"prev": f"/posts?limit={limit}&before_id={limit}", "count": None}

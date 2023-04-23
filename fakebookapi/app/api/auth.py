@@ -17,7 +17,7 @@ auth_route = APIRouter(
 
 @auth_route.post("/token", status_code=status.HTTP_200_OK)
 async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm=Depends(), db: Session=Depends(get_db),
+    form_data: OAuth2PasswordRequestForm=Depends(), db: Session=Depends(get_db)
 ):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
@@ -26,7 +26,6 @@ async def login_for_access_token(
     token = create_access_token(
         user.username,
         user.id,
-        # user.admin,
         expires_delta=token_expires
     )
     return {"token": token}

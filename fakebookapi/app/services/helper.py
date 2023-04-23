@@ -1,3 +1,5 @@
+from enum import StrEnum
+
 def get_pagination_info(paging_info, before_id, limit):
     return {
         **paging_info,
@@ -12,3 +14,14 @@ def get_pagination_info(paging_info, before_id, limit):
             else None
         ),
     }
+
+
+class UserStatusEnum(StrEnum):
+    
+    @classmethod
+    def get_enums(cls):
+        return (cls.ACTIVE, cls.PRIVATE, cls.DELETED)
+
+    ACTIVE = "ACTIVE"
+    PRIVATE = "PRIVATE"
+    DELETED = "DELETED"

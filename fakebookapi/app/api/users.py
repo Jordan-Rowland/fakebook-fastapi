@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 from app.models import get_db
 from app.models.posts import Post
 from app.models.users import User
-from app.schemas.users import CreateUserSchema, UserSchema
+from app.schemas.users import CreateUserSchema, PatchUserSchema
 from app.services.auth import get_current_user
-from app.services.users import create_user, get_user
+from app.services.users import create_user, delete_user, get_user, update_user
 
 
 users_route = APIRouter(
@@ -18,35 +18,25 @@ users_route = APIRouter(
 
 @users_route.post("", status_code=status.HTTP_201_CREATED)
 async def add_user(user_data: CreateUserSchema, db: Session=Depends(get_db)):
-    create_user(user_data.dict(), db)
+    return create_user(user_data.dict(), db)
 
 
 @users_route.get("", status_code=status.HTTP_200_OK)
 async def get_users(db: Session=Depends(get_db)):
+    # Update for pagination and desc order
     return db.query(User).all()
 
 
-@users_route.put("/me", status_code=status.HTTP_200_OK)
+@users_route.patch("/me", status_code=status.HTTP_200_OK)
 def handle_update_user(
-    user_data: UserSchema,
-    db: Session=Depends(get_db),
-    user: dict=Depends(get_current_user),
+    user_data: PatchUserSchema, db: Session=Depends(get_db), user: dict=Depends(get_current_user)
 ):
-    user.username = user_data.username
-    db.add(user)
-    db.commit()
-    return get_user(db, user.id)
+    return update_user(db, user_data.dict(), user["id"])
 
 
 @users_route.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
-def handle_delete_user(
-    user_data: UserSchema,
-    db: Session=Depends(get_db),
-    user: dict=Depends(get_current_user),
-):
-    user.deleted_at = user_data.deleted_at
-    db.add(user)
-    db.commit()
+def handle_delete_user(db: Session=Depends(get_db), user: dict=Depends(get_current_user)):
+    delete_user(db, user["id"])
 
 
 @users_route.get("/{user_id}", status_code=status.HTTP_200_OK)

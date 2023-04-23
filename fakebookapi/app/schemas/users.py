@@ -5,11 +5,18 @@ from pydantic import BaseModel
 class CreateUserSchema(BaseModel):
     username: str
     email: str
-    first_name: str
-    last_name: str
     password: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    location: Optional[str]
+    about_me: Optional[str]
 
 
-class UserSchema(BaseModel):
-    username: str
-    # username: str = Field(gt=0, lt=32)
+class PatchUserSchema(BaseModel):
+    username: Optional[str]
+    email: Optional[str]
+    password: Optional[str]
+    first_name: Optional[str]
+    last_name: Optional[str]
+    location: Optional[str]
+    about_me: Optional[str]

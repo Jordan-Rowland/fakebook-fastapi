@@ -1,8 +1,9 @@
 from datetime import datetime
+
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
+
 from app.models import Base
-from app.models.posts import Post
 
 
 class User(Base):
@@ -19,7 +20,19 @@ class User(Base):
     about_me = sa.Column(sa.Text(), default=None)
     member_since = sa.Column(sa.DateTime(), default=datetime.now)
     last_seen = sa.Column(sa.DateTime(), default=datetime.now)
+    # status = sa.Column(sa.String(64))  --> ACTIVE | DELETED | (PRIVATE?)
     active = sa.Column(sa.Boolean(), default=True)
     private = sa.Column(sa.Boolean(), default=False)
 
     posts = relationship("Post", back_populates="user", lazy=True)
+
+    def update(self, post_data):
+        print(f"{post_data=}")
+        for k, v in post_data.items():
+            if v:
+                setattr(self, k, v)
+        print(f"{self.__dict__=}")
+
+    def delete(self):
+        ...
+        # self.status = datetime.now()  UserStatusEnum.DELETED
