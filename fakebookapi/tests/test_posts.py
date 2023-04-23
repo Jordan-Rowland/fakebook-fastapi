@@ -53,7 +53,7 @@ def test_get_posts(client, session):
 
 
 @pytest.mark.parametrize(
-    "after_query, post_ids, prev_response, next_response",
+    "before_query, post_ids, prev_response, next_response",
     [
         (4, (3, 2, 1), "/posts?limit=3&before_id=7", None),
         (7, (6, 5, 4), "/posts?limit=3&before_id=10", "/posts?limit=3&before_id=4"),
@@ -61,10 +61,10 @@ def test_get_posts(client, session):
     ]
 )
 def test_get_paginated_posts(
-        client, session, after_query, post_ids, prev_response, next_response):
+        client, session, before_query, post_ids, prev_response, next_response):
     test_helper.create_user(session)
     test_helper.create_posts_with_deleted(session, 15)
-    response = client.get(f"/posts?limit=3&before_id={after_query}")
+    response = client.get(f"/posts?limit=3&before_id={before_query}")
     assert response.status_code == 200
     data = response.json()["data"]
     assert data[0]["id"] == post_ids[0]

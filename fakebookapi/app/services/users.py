@@ -1,3 +1,5 @@
+from sqlalchemy import desc
+
 from app.models.users import User
 from app.services.auth import get_password_hash
 
@@ -13,6 +15,15 @@ def create_user(user_data, db):
 
 def get_user(db, user_id):
     return db.query(User).get(user_id)
+
+
+def get_users(db, include_deleted=False, limit=10, before_id=None):
+    query = db.query(User).filter(User.private == False)
+    if not include_deleted:
+        query = query.filter(User.active == True)
+    if before_id is not None:
+        query = query.filter(User.id < before_id)
+    return query.order_by(desc(User.id)).limit(limit).all()
 
 
 def update_user(db, user_data, user_id):

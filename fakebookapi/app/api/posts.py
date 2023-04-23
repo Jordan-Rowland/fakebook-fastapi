@@ -28,6 +28,7 @@ def create_post(
     return PostResponseSchema.from_orm(post)
 
 
+# TODO: List status codes
 @posts_route.get("", response_model=Dict[str, dict | List[PostResponseSchema]])
 def get_posts(
     db: Session=Depends(get_db),
@@ -49,7 +50,7 @@ def get_posts(
     }
     response = {
         "data": parse_obj_as(List[PostResponseSchema], posts),
-        "pagination": get_pagination_info(paging_info, before_id, limit)
+        "pagination": get_pagination_info("posts", paging_info, before_id, limit)
     }
     return response
 

@@ -23,6 +23,26 @@ def create_user(session, user_data=None):
     return user
 
 
+def create_users(session, num_users):
+    users = []
+    for i in range(num_users):
+        users.append(create_user(session, {
+            "username": f"user #{i+1}", "email": "email{i+1}@email.com"
+        }))
+    return users
+
+
+def create_users_with_deleted(session, num_users):
+    users = []
+    for i in range(num_users):
+        users.append(create_user(session, {
+            "id": i+1,
+            "username": f"user #{i+1}",
+            "email": f"email{i+1}@email.com",
+        }))
+    return users
+
+
 def create_post(session, post_data=None, user_id=USER_ID):
     if post_data is None:
         post_data = {}
